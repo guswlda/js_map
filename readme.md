@@ -4,13 +4,17 @@ Map.app
 
 ## Getting Started
 
-map.app - javascript / react.js
+- Naver map API
+- Naver lib marker
+- Javascript
+- react.js
+
 
 ### Prerequisites
 
 Requirements for the software and other tools to build, test and push 
 - [Naver.map ] (https://navermaps.github.io/maps.js.ncp/docs/tutorial-2-Getting-Started.html)
-- [Naver.marker2] (https://navermaps.github.io/maps.js.ncp/docs/tutorial-2-Marker.html)
+- [Naver.marker] (https://navermaps.github.io/maps.js.ncp/docs/tutorial-2-Marker.html)
 
 ### Installing
 
