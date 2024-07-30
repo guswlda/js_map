@@ -39,14 +39,46 @@ const currentData = data.records.filter(
     item.위도 !== ''
 );
 
-// console.log(currentData);
+// 검색 버튼 기능
+const searchBtn = document.querySelector('.search button');
+// 검색 입력창
+const searchInput = document.querySelector('.search input');
+// 맵 영역 초기화
+const mapElmt = document.querySelector('#map');
+// 로딩 전역 변수
+const loading = document.querySelector('.loading');
 
-// 네이버 맵 적용 - (getCurrentPosition) 위도, 경도 메소드
+// 검색 버튼 클릭 시 실행 함수
+searchBtn.addEventListener('click', function () {
+  const searchValue = searchInput.value; // 입력값 저장
+
+  if (searchInput.value === '') {
+    alert('검색어를 입력해 주세요');
+    searchInput.focus(); // 커서 입력창에 포커스
+    return;
+  } // 검색어 없이 클릭할 경우 알림 (alert)
+
+  const searchResult = currentData.filter(
+    (item) =>
+      item.도서관명.includes(searchValue) || item.시군구명.includes(searchValue)
+  );
+  // console.log(searchResult) => length 0 일 경우 처리 과정
+  if (searchResult.length === 0) {
+    alert('검색 결과가 없습니다.');
+    searchInput.value = ''; // 검색어 초기화
+    searchInput.focus(); // 커서 입력창에 포커스
+    return;
+  } else {
+    mapElmt.innerHTML = ''; // 네이버 맵 영역 초기화
+    startLenderMap(searchResult[0].위도, searchResult[0].경도);
+    searchInput.value = ''; // 검색어 초기화
+  }
+});
+
+// 네이버 맵 적용  - 현재 위치 검색 (getCurrentPosition) 위도, 경도 메소드
 navigator.geolocation.getCurrentPosition((position) => {
-  // console.log(position)
   const lat = position.coords.latitude;
   const lng = position.coords.longitude;
-  // console.log(lat,lng);
   startLenderMap(lat, lng);
 });
 
@@ -60,7 +92,7 @@ function startLenderMap(lat, lng) {
     position: new naver.maps.LatLng(lat, lng),
     map: map,
   });
-
+  // currentData - 전역변수
   currentData.forEach((item) => {
     let latlng = new naver.maps.LatLng(item.위도, item.경도);
     let bounds = map.getBounds();
@@ -84,12 +116,19 @@ function startLenderMap(lat, lng) {
         address: item.소재지도로명주소,
         homePage: item.홈페이지주소,
       });
-
+      // naver에서 만든 함수 (infoWindow, naver.maps ~ )
       let infoWindow = new naver.maps.InfoWindow({
         content: `
           <h4 style="padding:0.25rem 0.5rem; font-size:14px; font-weight:500; color:#555;">${item.도서관명}</h4>
         `,
       });
+
+      // 로딩바에 시간 딜레이
+      setTimeout(() => {
+        loading.style.display = 'none';
+      }, 500);
+
+      // loading.style.display = 'none';
 
       naver.maps.Event.addListener(marker, 'click', function () {
         if (infoWindow.getMap()) {
@@ -136,7 +175,7 @@ function startLenderMap(lat, lng) {
       contact,
       address,
       homePage,
-    } = markerInfoData;
+    } = markerInfoData; // 구조분해 할당 -> 많이 사용함
 
     const infoElmt = `
     <div class="detail_title"><h2>${title}</h2></div>
